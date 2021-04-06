@@ -61,6 +61,7 @@ public final class Constants {
     public static final int lifter = 1;
     public static final int hood = 2;
     public static final int collectorP = 3;
+    public static final int compressor = 12;
     
 
 public static final  double encoderInchConversion = 4096/19.24;

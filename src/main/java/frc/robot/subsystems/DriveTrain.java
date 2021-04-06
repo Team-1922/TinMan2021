@@ -47,7 +47,7 @@ public class DriveTrain extends SubsystemBase {
     rearRight.set(ControlMode.Follower, frontRight.getDeviceID());
     frontLeft.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
     frontRight.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-    frontRight.setSensorPhase(true);
+    frontRight.setSensorPhase(false);
     frontRight.setInverted(true);
     rearRight.setInverted(InvertType.FollowMaster);
     frontLeft.setSensorPhase(false);
@@ -58,10 +58,11 @@ public class DriveTrain extends SubsystemBase {
   public void drive(double left, double right, boolean flipped) {
     if (flipped) {
       frontRight.set(-left);
-      frontLeft.set(-right);
+      frontLeft.set(-right*1.2);
     
     } else {
-      frontLeft.set(left);
+      //Multiply left by 1.2 if autonomous, works well because drifitng
+      frontLeft.set(left*1.2);
       frontRight.set(right);
   
     }

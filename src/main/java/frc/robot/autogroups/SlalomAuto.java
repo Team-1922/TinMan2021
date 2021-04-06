@@ -18,7 +18,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
  */
 public class SlalomAuto extends SequentialCommandGroup {
     private DriveTrain m_driveTrain;
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("OzRam");
+  
     public SlalomAuto(DriveTrain driveTrain) {
         m_driveTrain = driveTrain;
         /*
@@ -46,8 +46,8 @@ public class SlalomAuto extends SequentialCommandGroup {
         
 
 
-           addCommands(new DriveForward(m_driveTrain, "firstLeg"), 
-                  new Turn(m_driveTrain, "firstturn"),
+           addCommands(new DriveForward(m_driveTrain, "firstLeg"));
+       /*           new Turn(m_driveTrain, "firstturn"),
                     new DriveForward(m_driveTrain, "secondLeg"),
                     new Turn(m_driveTrain, "secondturn"),
                     new DriveForward(m_driveTrain, "thirdLeg"),
@@ -65,6 +65,7 @@ public class SlalomAuto extends SequentialCommandGroup {
                     new DriveForward(m_driveTrain, "ninthLeg"), 
                     new Turn(m_driveTrain, "ninthturn"),
                     new DriveForward(m_driveTrain, "tenthLeg"));
+                    */
         
                   
     }

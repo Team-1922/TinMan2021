@@ -29,16 +29,17 @@ public class Collector extends SubsystemBase {
 
   public void drive(double speed) {
     pickUp.set(speed);
-    centerLeft.set(-speed * 1.2); // This has extra friction
+    centerLeft.set(speed * 1.2); // This has extra friction
     centerRight.set(-speed);
   }
-
+/* Just testing -- Switching true and false here below.
+If that doesn't work, put it back and delete this line after.*/ 
   public void CollectorUp() {
-     CollectorSolenoid.set(true);
+     CollectorSolenoid.set(false);
   }
 
   public void CollectorDown() {
-     CollectorSolenoid.set(false);
+     CollectorSolenoid.set(true);
   }
 
   public void ToggleCollector() {
