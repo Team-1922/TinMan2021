@@ -32,8 +32,8 @@ public class ShootingCommand extends CommandBase {
   @Override
   public void initialize() {
     NetworkTable table = NetworkTableInstance.getDefault().getTable("OzRam");
-   m_speed = table.getEntry( m_adjustSpeed).getDouble(.5);
-
+   m_speed = table.getEntry( m_adjustSpeed).getDouble(.35);
+   m_shooter.hoodUp();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -46,6 +46,8 @@ public class ShootingCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_shooter.shoot(0);
+    m_shooter.hoodDown();
+
   }
 
   // Returns true when the command should end.

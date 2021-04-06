@@ -7,6 +7,8 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -16,6 +18,7 @@ public class TankDriveCommand extends CommandBase {
   private DriveTrain m_driveTrain;
   private Joystick m_joystickRight;
   private Joystick m_joystickLeft;
+  private double stabilizer;
 
   /**
    * it do the drive thign
@@ -31,12 +34,14 @@ public class TankDriveCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("OzRam");
+    stabilizer = table.getEntry("stabilizer").getDouble(.25);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_driveTrain.drive(-m_joystickLeft.getY(), -m_joystickRight.getY(), m_driveTrain.getFLip());
+    m_driveTrain.drive(-m_joystickLeft.getY()*stabilizer, -m_joystickRight.getY()*stabilizer, m_driveTrain.getFLip());
 
    m_driveTrain.getLeftEncoder();
    m_driveTrain.getRightEncoder();

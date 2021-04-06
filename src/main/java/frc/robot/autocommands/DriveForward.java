@@ -21,8 +21,9 @@ public class DriveForward extends CommandBase {
  private double m_distance;
  private double m_speed;
  private double m_encoderStartValue;
+ private double m_rightEncoderStartValue;
  private String m_leg;
-
+ private double m_pGain;
  /**
    * Creates a new DriveForward.
    */
@@ -37,17 +38,32 @@ public class DriveForward extends CommandBase {
   @Override
   public void initialize() {
     m_encoderStartValue = m_driveTrain.getLeftEncoder();
+    m_rightEncoderStartValue = m_driveTrain.getRightEncoder();
  
     NetworkTable table = NetworkTableInstance.getDefault().getTable("OzRam");
     m_speed = table.getEntry("drivespeed").getDouble(.25);
     m_distance = table.getEntry(m_leg).getDouble(25) * Constants.encoderInchConversion;
+    m_pGain = table.getEntry("PGain").getDouble(.0005);
   
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_driveTrain.drive(m_speed, m_speed, false);
+  double newEncoderValue = m_driveTrain.getLeftEncoder();
+  double newRightEncoderValue = m_driveTrain.getRightEncoder();
+  double encoderError = (newRightEncoderValue - newEncoderValue) - (m_rightEncoderStartValue - m_encoderStartValue) ;
+
+  NetworkTable table = NetworkTableInstance.getDefault().getTable("OzRam");
+  NetworkTableEntry errorEntry = table.getEntry("encoderError");
+                errorEntry.setNumber(encoderError);      
+
+  double speedAdjustment = m_pGain * encoderError ; 
+  m_driveTrain.drive((m_speed + speedAdjustment), m_speed - speedAdjustment, false);
+
+  
+    
+
   }
 
   // Called once the command ends or is interrupted.
