@@ -34,4 +34,8 @@ public class Lifter extends SubsystemBase {
   m_lifterSolenoid.set(!m_lifterSolenoid.get());
  }
 
+ public boolean lifterState() {
+   return m_lifterSolenoid.get();
+ }
+
 }

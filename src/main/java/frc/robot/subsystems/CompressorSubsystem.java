@@ -13,7 +13,7 @@ public class CompressorSubsystem extends SubsystemBase {
   /** Creates a new Compressor. */
   public CompressorSubsystem() {}
 
-  private final Compressor m_compressor = new Compressor (Constants.compressor);
+  private final Compressor m_compressor = new Compressor();
 
   public void compressorToggle() {
     boolean compressorValue = m_compressor.enabled();

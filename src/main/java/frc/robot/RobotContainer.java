@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.autogroups.BarrelAuto;
 import frc.robot.autogroups.BounceAuto;
 import frc.robot.autogroups.SlalomAuto;
+import frc.robot.autogroups.StartingAuto;
 import frc.robot.commands.CollectorDown;
 import frc.robot.commands.CollectorUp;
 import frc.robot.commands.DriveStraight;
@@ -79,7 +80,10 @@ public class RobotContainer {
         private final SlalomAuto m_slalomAutoCommand = new SlalomAuto(m_driveTrain);
         private final BarrelAuto m_barrelAutoCommand = new BarrelAuto(m_driveTrain);
         private final BounceAuto m_bounceAutoCommand = new BounceAuto(m_driveTrain);
-        private final Shoot m_shoot = new Shoot(m_indexer, m_Shooter );
+        private final StartingAuto m_startingAutoCommand = new StartingAuto(m_driveTrain);
+        private final IndexerCommand m_indexerCommand = new IndexerCommand(m_indexer);
+        private final Shoot m_shoot = new Shoot(m_indexerCommand, m_Shooter );
+       
         // private final DefaultAuto m_autoCommand = new DefaultAuto(m_driveTrain);
 
         
@@ -105,6 +109,7 @@ public class RobotContainer {
 m_autoChooser.setDefaultOption("Slalom", m_slalomAutoCommand);
 m_autoChooser.addOption("Barrel", m_barrelAutoCommand);
 m_autoChooser.addOption("Bounce", m_bounceAutoCommand);
+m_autoChooser.addOption("Starting", m_startingAutoCommand );
 SmartDashboard.putData("Auto", m_autoChooser);
         }
 
@@ -310,6 +315,11 @@ SmartDashboard.putData("Auto", m_autoChooser);
                 NetworkTableEntry c_tenthLeg = table.getEntry("c_tenthLeg");
                 c_tenthLeg.setNumber(40);   
 
+
+
+                NetworkTableEntry startLeg1 = table.getEntry("startLeg1");
+                startLeg1.setNumber (10);
+
         }
 
       
@@ -350,15 +360,15 @@ SmartDashboard.putData("Auto", m_autoChooser);
 
                 new JoystickButton(m_XBoxController, 4) // Y
                                 //
-                                .whenPressed(new ToggleHoodCommand(m_Shooter));
+                                .whenPressed(new StartingAuto(m_driveTrain)); //Can you run an autogroup if it uses 2 subsystems?
 
                 new JoystickButton(m_XBoxController, 7) // Left side menu button
                                 //
-                                .toggleWhenPressed(new IndexerCommand(m_indexer));
+                                .toggleWhenPressed(m_indexerCommand);
 
                 new JoystickButton(m_XBoxController, 8) // Right side menu button
                                 //
-                                .whenPressed(new LifterCommand(m_lifter));
+                                .whenPressed(new LifterCommand(m_lifter, m_indexerCommand));
 
                 new JoystickButton(m_XBoxController, 1) // A
                              //

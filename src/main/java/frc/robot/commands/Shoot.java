@@ -13,11 +13,11 @@ import frc.robot.subsystems.Shooter;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class Shoot extends ParallelCommandGroup {
   /** Creates a new Shoot. */
-  public Shoot(Indexer indexer, Shooter shooter)  {
+  public Shoot(IndexerCommand indexer, Shooter shooter)  {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-    new IndexerCommand(indexer),
+    indexer,
     new ShootingCommand(shooter, "adjustSpeed")
     );
     
