@@ -9,9 +9,11 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -28,6 +30,13 @@ public class Shooter extends SubsystemBase {
 
     public Shooter() {
         super();
+        shooterLeft.configFactoryDefault();
+        shooterRight.configFactoryDefault();
+        shooterLeft.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
+        shooterLeft.config_kF(0, .058, 30);
+		shooterLeft.config_kP(0, 0.05115, 30);
+		shooterLeft.config_kI(0, 0, 30);
+		shooterLeft.config_kD(0, 0, 30);
         shooterRight.set(ControlMode.Follower, shooterLeft.getDeviceID());
         shooterLeft.setInverted(true);
         shooterRight.setInverted(InvertType.OpposeMaster);
@@ -54,5 +63,10 @@ public class Shooter extends SubsystemBase {
     }
     public void toggleHood(){
         hoodSolenoid.set(!hoodSolenoid.get());
+    }
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("ShootingVelocity", shooterLeft.getSelectedSensorVelocity(0));
+        SmartDashboard.putNumber("VelocityError", shooterLeft.getClosedLoopError(0));
     }
 }

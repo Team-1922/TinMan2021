@@ -32,6 +32,7 @@ import frc.robot.commands.IndexerCommand;
 import frc.robot.commands.LifterCommand;
 import frc.robot.commands.Limelight;
 import frc.robot.commands.Shoot;
+import frc.robot.commands.ShootVelocity;
 import frc.robot.commands.ShootingCommand;
 import frc.robot.commands.TankDriveCommand;
 import frc.robot.commands.ToggleCompressor;
@@ -83,6 +84,7 @@ public class RobotContainer {
         private final StartingAuto m_startingAutoCommand = new StartingAuto(m_driveTrain);
         private final IndexerCommand m_indexerCommand = new IndexerCommand(m_indexer);
         private final Shoot m_shoot = new Shoot(m_indexerCommand, m_Shooter );
+        private final ShootVelocity m_shootVelocity = new ShootVelocity(m_Shooter, 2585);
        
         // private final DefaultAuto m_autoCommand = new DefaultAuto(m_driveTrain);
 
@@ -364,7 +366,7 @@ SmartDashboard.putData("Auto", m_autoChooser);
 
                 new JoystickButton(m_XBoxController, 7) // Left side menu button
                                 //
-                                .toggleWhenPressed(m_indexerCommand);
+                                .toggleWhenPressed(m_shootVelocity);
 
                 new JoystickButton(m_XBoxController, 8) // Right side menu button
                                 //
