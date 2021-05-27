@@ -15,9 +15,9 @@ public class StartingAuto extends SequentialCommandGroup {
   ) {
     // Use addRequirements() here to declare subsystem dependencies.
 
-  addCommands(
+ // addCommands(
     
-  new DriveForward(driveTrain, "startLeg1"));
+  //new DriveForward(driveTrain, "startLeg1"));
 
   }
 

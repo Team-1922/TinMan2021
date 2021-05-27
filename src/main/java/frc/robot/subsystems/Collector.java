@@ -21,16 +21,24 @@ public class Collector extends SubsystemBase {
   private WPI_TalonSRX centerLeft = new WPI_TalonSRX(Constants.collectorLeft);
   private WPI_TalonSRX centerRight = new WPI_TalonSRX(Constants.collectorRight);
   private Solenoid CollectorSolenoid;
+  private double CollectorSpeed;
 
   public Collector() {
     super();
     CollectorSolenoid = new Solenoid(Constants.collectorP);
   }
 
+  public double getCollectorSpeed() {
+
+  return CollectorSpeed;
+  }
+  
+
   public void drive(double speed) {
     pickUp.set(speed);
     centerLeft.set(speed * 1.2); // This has extra friction
     centerRight.set(-speed);
+    CollectorSpeed = speed;
   }
 /* Just testing -- Switching true and false here below.
 If that doesn't work, put it back and delete this line after.*/ 
@@ -46,4 +54,13 @@ If that doesn't work, put it back and delete this line after.*/
      CollectorSolenoid.set(! CollectorSolenoid.get());
   }
 
+  public boolean UpStatus() {
+if (CollectorSolenoid.get() == false) {
+  return true;
+}
+else {
+  return false;
+}
+
+  }
 }

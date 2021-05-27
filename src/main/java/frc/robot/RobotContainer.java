@@ -16,19 +16,25 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.autogroups.BarrelAuto;
 import frc.robot.autogroups.BounceAuto;
 import frc.robot.autogroups.SlalomAuto;
 import frc.robot.autogroups.StartingAuto;
+import frc.robot.commands.BetterIndexer;
+import frc.robot.commands.BetterTransfer;
 import frc.robot.commands.CollectorDown;
+import frc.robot.commands.CollectorReverse;
 import frc.robot.commands.CollectorUp;
 import frc.robot.commands.DriveStraight;
 import frc.robot.commands.FlipCommand;
 import frc.robot.commands.IndexerCommand;
+import frc.robot.commands.IndexerReverse;
 import frc.robot.commands.LifterCommand;
 import frc.robot.commands.Limelight;
 import frc.robot.commands.Shoot;
@@ -74,17 +80,22 @@ public class RobotContainer {
                         m_joystickRight);
         private final TransferCommand m_TransferPassive = new TransferCommand(m_lTransfer, 0);
         private final CollectorUp m_CollectorUp = new CollectorUp(m_Collector);
-        private final SendableChooser<Command> m_autoChooser = new SendableChooser<Command>();
-        // private final CollectorDown m_CollectorDown =
+        private final SendableChooser<CommandBase> m_autoChooser = new SendableChooser<CommandBase>();
+        private final CollectorDown m_CollectorDown = new CollectorDown(m_Collector, .5);
+        private final CommandBase m_lifterDown = new InstantCommand(m_lifter::lifterDown, m_lifter);
         // private final DriveStraightAuto m_autoCommand = new
         // DriveStraightAuto(m_driveTrain, .2, 2);
+        //private final CollectorReverse m_CollectorReverse = new CollectorReverse(m_Collector, 0.5);
+        private final IndexerReverse m_indexerReverse = new IndexerReverse(m_indexer);
+        private final BetterTransfer m_bTransfer = new BetterTransfer(m_indexer, m_lTransfer, 1);
+        private final BetterIndexer m_bIndexer = new BetterIndexer(m_indexer, m_lTransfer, m_Shooter);
         private final SlalomAuto m_slalomAutoCommand = new SlalomAuto(m_driveTrain);
         private final BarrelAuto m_barrelAutoCommand = new BarrelAuto(m_driveTrain);
         private final BounceAuto m_bounceAutoCommand = new BounceAuto(m_driveTrain);
         private final StartingAuto m_startingAutoCommand = new StartingAuto(m_driveTrain);
         private final IndexerCommand m_indexerCommand = new IndexerCommand(m_indexer);
         private final Shoot m_shoot = new Shoot(m_indexerCommand, m_Shooter );
-        private final ShootVelocity m_shootVelocity = new ShootVelocity(m_Shooter, 2585);
+        private final ShootVelocity m_shootVelocity = new ShootVelocity(m_Shooter, "ShootingVelocity");
        
         // private final DefaultAuto m_autoCommand = new DefaultAuto(m_driveTrain);
 
@@ -98,12 +109,14 @@ public class RobotContainer {
                 m_driveTrain.setDefaultCommand(m_TankDrive);
                 m_lTransfer.setDefaultCommand(m_TransferPassive);
                 m_Collector.setDefaultCommand(m_CollectorUp);
+                m_indexer.setDefaultCommand(m_bIndexer);
 
 
                 initNetworkTable();
                 initAutoChooser();
-
         }
+
+        
 
         private void initAutoChooser()
         {
@@ -129,6 +142,12 @@ SmartDashboard.putData("Auto", m_autoChooser);
                 
                 NetworkTableEntry stabilizer = table.getEntry("stabilizer");
                 stabilizer.setNumber(1);     
+
+                NetworkTableEntry shootingVelocity = table.getEntry("ShootingVelocity");
+                shootingVelocity.setNumber(2585);     
+
+                NetworkTableEntry velocityContext = table.getEntry("VelocityContext");
+                velocityContext.setString("Basically 2585 is our current default value and that's about 50% power, 5170 would be ~100%"); 
 
                 NetworkTableEntry entry = table.getEntry("drivespeed");
                 entry.setNumber(.27);      
@@ -320,7 +339,7 @@ SmartDashboard.putData("Auto", m_autoChooser);
 
 
                 NetworkTableEntry startLeg1 = table.getEntry("startLeg1");
-                startLeg1.setNumber (10);
+                startLeg1.setNumber (0);
 
         }
 
@@ -343,14 +362,13 @@ SmartDashboard.putData("Auto", m_autoChooser);
                                 .whenPressed(new ToggleCompressor(m_compressor));
 
 
-
                 new JoystickButton(m_XBoxController, 2) // B
                                 //
                                 .toggleWhenPressed(m_shoot);
 
                 new JoystickButton(m_XBoxController, 3) // X
                                 //
-                                .toggleWhenPressed(new CollectorDown(m_Collector, .5));
+                                .toggleWhenPressed(m_CollectorDown);
 
                 new JoystickButton(m_XBoxController, 5) // left bumper
                                 //
@@ -362,11 +380,11 @@ SmartDashboard.putData("Auto", m_autoChooser);
 
                 new JoystickButton(m_XBoxController, 4) // Y
                                 //
-                                .whenPressed(new StartingAuto(m_driveTrain)); //Can you run an autogroup if it uses 2 subsystems?
+                                .whenPressed(() -> m_CollectorDown.reverse()); 
 
                 new JoystickButton(m_XBoxController, 7) // Left side menu button
                                 //
-                                .toggleWhenPressed(m_shootVelocity);
+                                .toggleWhenPressed(m_indexerReverse);
 
                 new JoystickButton(m_XBoxController, 8) // Right side menu button
                                 //
@@ -385,9 +403,9 @@ SmartDashboard.putData("Auto", m_autoChooser);
          *
          * @return the command to run in autonomous
          */
-        public Command getAutonomousCommand() {
+        public CommandBase getAutonomousCommand() {
                 // An ExampleCommand will run in autonomous
-                Command selected = m_autoChooser.getSelected();
+                CommandBase selected = m_autoChooser.getSelected();
                 return selected;
         }
 

@@ -46,4 +46,9 @@ public class CollectorDown extends CommandBase {
   public boolean isFinished() {
     return false;
   }
+
+  public void reverse() {
+  m_speed *= -1 ;
+
+  }
 }

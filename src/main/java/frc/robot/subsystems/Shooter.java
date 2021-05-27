@@ -64,9 +64,16 @@ public class Shooter extends SubsystemBase {
     public void toggleHood(){
         hoodSolenoid.set(!hoodSolenoid.get());
     }
+
+    public double getShooterRPM()
+    {
+            return shooterLeft.getSelectedSensorVelocity(0) * 600 / 2048;
+    }
+
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("ShootingVelocity", shooterLeft.getSelectedSensorVelocity(0));
-        SmartDashboard.putNumber("VelocityError", shooterLeft.getClosedLoopError(0));
+        // SmartDashboard.putNumber("DisplayShootingVelocity", shooterLeft.getSelectedSensorVelocity(0) * 600 / 2048);
+        SmartDashboard.putNumber("DisplayShootingVelocity", getShooterRPM());
+        SmartDashboard.putNumber("VelocityError", shooterLeft.getClosedLoopError(0) * 600 / 2048);
     }
 }

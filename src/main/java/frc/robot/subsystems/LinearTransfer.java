@@ -16,6 +16,9 @@ import frc.robot.Constants;
  * Add your docs here.
  */
 public class LinearTransfer extends SubsystemBase {
+
+  private double m_speed;
+
   private WPI_TalonSRX linearTransfer = new WPI_TalonSRX(Constants.linearTransfer);
 
   public LinearTransfer() {
@@ -24,10 +27,16 @@ public class LinearTransfer extends SubsystemBase {
 
   public void drive(double speed) {
     linearTransfer.set(speed);
+    m_speed = speed;
   }
 
   public int getEncoders() {
     return linearTransfer.getSensorCollection().getQuadraturePosition();
+  }
+
+  public double getTransferSpeed() {
+
+    return m_speed;
   }
 
 }
