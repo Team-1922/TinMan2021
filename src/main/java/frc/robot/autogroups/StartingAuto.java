@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.autocommands.DriveForward;
+import frc.robot.autocommands.Turn;
 
 public class StartingAuto extends SequentialCommandGroup {
   /** Creates a new StartingAuto. */
@@ -15,9 +16,9 @@ public class StartingAuto extends SequentialCommandGroup {
   ) {
     // Use addRequirements() here to declare subsystem dependencies.
 
- // addCommands(
+  addCommands(
     
-  //new DriveForward(driveTrain, "startLeg1"));
+  new Turn(driveTrain, "startLeg1"));
 
   }
 

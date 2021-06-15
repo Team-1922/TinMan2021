@@ -39,8 +39,6 @@ public final class Constants {
      * final int transferFront = 4; public static final int transferRear = 9;
      */
 
-    public static final int collectorLeft = 4;
-    public static final int collectorRight = 0;
     public static final int collector = 5;
 
     public static final int rearRight = 1;
@@ -51,7 +49,7 @@ public final class Constants {
     public static final int linearTransfer = 8;
 
     public static final int leftIndexer = 9;
-    public static final int rightIndexer = 3;
+    public static final int rightIndexer = 4;
 
     public static final int shooterRight = 11;
     public static final int shooterLeft = 10;

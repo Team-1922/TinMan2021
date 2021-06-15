@@ -46,7 +46,7 @@ public class SlalomAuto extends SequentialCommandGroup {
         
 
 
-           addCommands(new DriveForward(m_driveTrain, "firstLeg"));
+           addCommands(new Turn(m_driveTrain, "startLeg2"));
        /*           new Turn(m_driveTrain, "firstturn"),
                     new DriveForward(m_driveTrain, "secondLeg"),
                     new Turn(m_driveTrain, "secondturn"),

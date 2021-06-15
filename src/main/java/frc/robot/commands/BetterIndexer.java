@@ -14,6 +14,10 @@ public class BetterIndexer extends CommandBase {
   private Indexer m_indexer;
   private Shooter m_shooter;
   private LinearTransfer m_transfer;
+  private long m_startingTime;
+  private long m_currentTime;
+  private long m_totalTime;
+
   /** Creates a new BetterIndexer. */
   public BetterIndexer(Indexer indexer, LinearTransfer transfer, Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -26,8 +30,9 @@ public class BetterIndexer extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
-
+m_startingTime = 0;
+m_currentTime = 0;
+m_totalTime = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -36,14 +41,24 @@ public class BetterIndexer extends CommandBase {
 double shootSpeed = m_shooter.getShooterRPM();
 double transferSpeed = m_transfer.getTransferSpeed();
 
+
 if (shootSpeed > 0 ) {
   m_indexer.drive(0.5);
+  if (m_totalTime == 0) {
+    m_startingTime = System.currentTimeMillis();
+  }
+  m_currentTime = System.currentTimeMillis();
+  m_totalTime = m_currentTime - m_startingTime + 1;
+
 } else {
   if (Math.abs(transferSpeed) > 0) {
     m_indexer.drive(-0.5);
   } else {
     m_indexer.drive(0);
+    
   }
+    m_totalTime = 0;
+    m_startingTime = 0;
 }
 
 
@@ -51,11 +66,20 @@ if (shootSpeed > 0 ) {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+m_startingTime = 0;
+m_currentTime = 0;
+m_totalTime = 0;
+
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;
+  }
+
+  public long getTotalTime() {
+    return m_totalTime;
   }
 }

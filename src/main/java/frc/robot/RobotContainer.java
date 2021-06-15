@@ -17,13 +17,17 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.autogroups.BarrelAuto;
 import frc.robot.autogroups.BounceAuto;
+import frc.robot.autogroups.ShootAuto;
 import frc.robot.autogroups.SlalomAuto;
 import frc.robot.autogroups.StartingAuto;
 import frc.robot.commands.BetterIndexer;
@@ -36,6 +40,7 @@ import frc.robot.commands.FlipCommand;
 import frc.robot.commands.IndexerCommand;
 import frc.robot.commands.IndexerReverse;
 import frc.robot.commands.LifterCommand;
+import frc.robot.commands.LifterUp;
 import frc.robot.commands.Limelight;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootVelocity;
@@ -64,11 +69,12 @@ import frc.robot.autocommands.Turn;
 public class RobotContainer {
         // The robot's subsystems and commands are defined here...
         private final DriveTrain m_driveTrain = new DriveTrain();
-        private final Shooter m_Shooter = new Shooter();
+        private final Shooter m_shooter = new Shooter();
         private final LinearTransfer m_lTransfer = new LinearTransfer();
         private final Collector m_Collector = new Collector();
         private final Indexer m_indexer = new Indexer();
         private final Lifter m_lifter = new Lifter();
+        private final LifterUp m_lifterPutUp = new LifterUp(m_lifter, m_shooter);
         private final CompressorSubsystem m_compressor = new CompressorSubsystem();
 
         private final Joystick m_joystickLeft = new Joystick(1);
@@ -88,15 +94,21 @@ public class RobotContainer {
         //private final CollectorReverse m_CollectorReverse = new CollectorReverse(m_Collector, 0.5);
         private final IndexerReverse m_indexerReverse = new IndexerReverse(m_indexer);
         private final BetterTransfer m_bTransfer = new BetterTransfer(m_indexer, m_lTransfer, 1);
-        private final BetterIndexer m_bIndexer = new BetterIndexer(m_indexer, m_lTransfer, m_Shooter);
+        private final TransferCommand m_transferForward = new TransferCommand(m_lTransfer, -0.5);
+        private final DriveForward m_driveForward = new DriveForward(m_driveTrain, "shootLeg");
+        
+        private final BetterIndexer m_bIndexer = new BetterIndexer(m_indexer, m_lTransfer, m_shooter);
+        private final LifterCommand m_lifterUp = new LifterCommand(m_lifter, m_bIndexer, m_shooter);
         private final SlalomAuto m_slalomAutoCommand = new SlalomAuto(m_driveTrain);
         private final BarrelAuto m_barrelAutoCommand = new BarrelAuto(m_driveTrain);
         private final BounceAuto m_bounceAutoCommand = new BounceAuto(m_driveTrain);
         private final StartingAuto m_startingAutoCommand = new StartingAuto(m_driveTrain);
+        
         private final IndexerCommand m_indexerCommand = new IndexerCommand(m_indexer);
-        private final Shoot m_shoot = new Shoot(m_indexerCommand, m_Shooter );
-        private final ShootVelocity m_shootVelocity = new ShootVelocity(m_Shooter, "ShootingVelocity");
-       
+        private final Shoot m_shoot = new Shoot(m_indexerCommand, m_shooter );
+        private final ShootVelocity m_shootVelocity = new ShootVelocity(m_shooter, "ShootingVelocity");
+        private final ParallelDeadlineGroup m_shootAutoCommand = new ParallelDeadlineGroup(new WaitCommand(10), m_shootVelocity, m_transferForward, m_lifterPutUp);
+        private final SequentialCommandGroup m_shootLifterDown = new SequentialCommandGroup(m_lifterDown, m_shootAutoCommand, m_driveForward);
         // private final DefaultAuto m_autoCommand = new DefaultAuto(m_driveTrain);
 
         
@@ -125,6 +137,7 @@ m_autoChooser.setDefaultOption("Slalom", m_slalomAutoCommand);
 m_autoChooser.addOption("Barrel", m_barrelAutoCommand);
 m_autoChooser.addOption("Bounce", m_bounceAutoCommand);
 m_autoChooser.addOption("Starting", m_startingAutoCommand );
+m_autoChooser.addOption("shooting", m_shootLifterDown );
 SmartDashboard.putData("Auto", m_autoChooser);
         }
 
@@ -139,6 +152,9 @@ SmartDashboard.putData("Auto", m_autoChooser);
                 
                 NetworkTableEntry pGainEntry = table.getEntry("PGain");
                 pGainEntry.setNumber(.0005);     
+
+                NetworkTableEntry shootLeg = table.getEntry("shootLeg");
+                shootLeg.setNumber(10);      
                 
                 NetworkTableEntry stabilizer = table.getEntry("stabilizer");
                 stabilizer.setNumber(1);     
@@ -339,7 +355,10 @@ SmartDashboard.putData("Auto", m_autoChooser);
 
 
                 NetworkTableEntry startLeg1 = table.getEntry("startLeg1");
-                startLeg1.setNumber (0);
+                startLeg1.setNumber (1);
+
+                NetworkTableEntry startLeg2 = table.getEntry("startLeg2");
+                startLeg2.setNumber (-1);
 
         }
 
@@ -388,7 +407,7 @@ SmartDashboard.putData("Auto", m_autoChooser);
 
                 new JoystickButton(m_XBoxController, 8) // Right side menu button
                                 //
-                                .whenPressed(new LifterCommand(m_lifter, m_indexerCommand));
+                                .whenPressed(new LifterCommand(m_lifter, m_bIndexer, m_shooter));
 
                 new JoystickButton(m_XBoxController, 1) // A
                              //
