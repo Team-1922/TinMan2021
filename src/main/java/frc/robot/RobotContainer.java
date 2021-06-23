@@ -42,6 +42,8 @@ import frc.robot.commands.IndexerReverse;
 import frc.robot.commands.LifterCommand;
 import frc.robot.commands.LifterUp;
 import frc.robot.commands.Limelight;
+import frc.robot.commands.LimelightFlash;
+import frc.robot.commands.LimelightShooter;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.ShootVelocity;
 import frc.robot.commands.ShootingCommand;
@@ -96,7 +98,9 @@ public class RobotContainer {
         private final BetterTransfer m_bTransfer = new BetterTransfer(m_indexer, m_lTransfer, 1);
         private final TransferCommand m_transferForward = new TransferCommand(m_lTransfer, -0.5);
         private final DriveForward m_driveForward = new DriveForward(m_driveTrain, "shootLeg");
-        
+        private final LimelightFlash m_limelightFlash = new LimelightFlash();
+        private final LimelightShooter m_limelightShooter = new LimelightShooter(m_driveTrain);
+
         private final BetterIndexer m_bIndexer = new BetterIndexer(m_indexer, m_lTransfer, m_shooter);
         private final LifterCommand m_lifterUp = new LifterCommand(m_lifter, m_bIndexer, m_shooter);
         private final SlalomAuto m_slalomAutoCommand = new SlalomAuto(m_driveTrain);
@@ -154,7 +158,16 @@ SmartDashboard.putData("Auto", m_autoChooser);
                 pGainEntry.setNumber(.0005);     
 
                 NetworkTableEntry shootLeg = table.getEntry("shootLeg");
-                shootLeg.setNumber(10);      
+                shootLeg.setNumber(5);   
+                
+                NetworkTableEntry LimePGain = table.getEntry("ShooterLimelightPGain");
+                LimePGain.setNumber(.07);
+
+                NetworkTableEntry LimeMinSpeed = table.getEntry("ShooterLimelightMinSpeed");
+                LimeMinSpeed.setNumber(.25);
+
+                NetworkTableEntry LimeOKError = table.getEntry("ShooterLimelightGoodError");
+                LimeOKError.setNumber(1.5);
                 
                 NetworkTableEntry stabilizer = table.getEntry("stabilizer");
                 stabilizer.setNumber(1);     
@@ -403,15 +416,15 @@ SmartDashboard.putData("Auto", m_autoChooser);
 
                 new JoystickButton(m_XBoxController, 7) // Left side menu button
                                 //
-                                .toggleWhenPressed(m_indexerReverse);
+                                .toggleWhenPressed(m_limelightFlash);
 
                 new JoystickButton(m_XBoxController, 8) // Right side menu button
                                 //
                                 .whenPressed(new LifterCommand(m_lifter, m_bIndexer, m_shooter));
 
                 new JoystickButton(m_XBoxController, 1) // A
-                             //
-                             .whenPressed(new CollectorUp(m_Collector));
+                            //
+                             .toggleWhenPressed(m_limelightShooter);
 
 
 
