@@ -42,6 +42,7 @@ import frc.robot.commands.IndexerReverse;
 import frc.robot.commands.LifterCommand;
 import frc.robot.commands.LifterUp;
 import frc.robot.commands.Limelight;
+import frc.robot.commands.LimelightDistance;
 import frc.robot.commands.LimelightFlash;
 import frc.robot.commands.LimelightShooter;
 import frc.robot.commands.Shoot;
@@ -100,6 +101,8 @@ public class RobotContainer {
         private final DriveForward m_driveForward = new DriveForward(m_driveTrain, "shootLeg");
         private final LimelightFlash m_limelightFlash = new LimelightFlash();
         private final LimelightShooter m_limelightShooter = new LimelightShooter(m_driveTrain);
+        private final LimelightDistance m_limelightDistance = new LimelightDistance();
+        private final SequentialCommandGroup m_limelightAimAndDistance = new SequentialCommandGroup(m_limelightShooter, m_limelightDistance);
 
         private final BetterIndexer m_bIndexer = new BetterIndexer(m_indexer, m_lTransfer, m_shooter);
         private final LifterCommand m_lifterUp = new LifterCommand(m_lifter, m_bIndexer, m_shooter);
@@ -424,7 +427,7 @@ SmartDashboard.putData("Auto", m_autoChooser);
 
                 new JoystickButton(m_XBoxController, 1) // A
                             //
-                             .toggleWhenPressed(m_limelightShooter);
+                             .toggleWhenPressed(m_limelightAimAndDistance);
 
 
 
