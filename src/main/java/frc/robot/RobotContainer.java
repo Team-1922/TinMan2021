@@ -161,13 +161,13 @@ SmartDashboard.putData("Auto", m_autoChooser);
                 shootLeg.setNumber(5);   
                 
                 NetworkTableEntry LimePGain = table.getEntry("ShooterLimelightPGain");
-                LimePGain.setNumber(.07);
+                LimePGain.setNumber(.05);
 
                 NetworkTableEntry LimeMinSpeed = table.getEntry("ShooterLimelightMinSpeed");
                 LimeMinSpeed.setNumber(.25);
 
                 NetworkTableEntry LimeOKError = table.getEntry("ShooterLimelightGoodError");
-                LimeOKError.setNumber(1.5);
+                LimeOKError.setNumber(.5);
                 
                 NetworkTableEntry stabilizer = table.getEntry("stabilizer");
                 stabilizer.setNumber(1);     
