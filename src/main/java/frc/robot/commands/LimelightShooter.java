@@ -20,6 +20,18 @@ public class LimelightShooter extends CommandBase {
   private double minSpeed = .25;
   private double error;
   private double acceptableError = 1.5;
+  private double response;
+  private double targetTimerStart;
+  private double targetTimerTotal = 10;
+
+  private double DGain;
+  private double startingTime;
+  private double totalTime;
+  private double speedMod;
+  private double changeTime;
+  private double startingError; 
+  private double currentError;
+  private double changeError;
   /** Creates a new LimelightShooter. */
   public LimelightShooter(DriveTrain driveTrain) {
     m_driveTrain = driveTrain;
@@ -32,18 +44,38 @@ public class LimelightShooter extends CommandBase {
   public void initialize() {
     NetworkTable table = NetworkTableInstance.getDefault().getTable("OzRam");
     PGain = table.getEntry("ShooterLimelightPGain").getDouble(.25);
+    DGain = table.getEntry("ShooterLimelightDGain").getDouble(.25);
     minSpeed = table.getEntry("ShooterLimelightMinSpeed").getDouble(.25);
     acceptableError = table.getEntry("ShooterLimelightGoodError").getDouble(.25);
+    targetTimerTotal = table.getEntry("limelightTargetTime").getDouble(10);
+    targetTimerStart = 0;
+    startingTime = System.currentTimeMillis();
+    startingError = tx.getDouble(0.0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     error = tx.getDouble(0.0);
-    double response = PGain * error;
+    response = PGain * error;
     if(Math.abs(response) < minSpeed) {
       response = minSpeed * Math.signum(response);
     }
+
+    totalTime = System.currentTimeMillis();
+    changeTime = totalTime - startingTime;
+    startingTime = totalTime;
+    
+    currentError = tx.getDouble(0.0);
+    changeError = startingError - currentError;
+    startingError = currentError;
+    speedMod = changeError / changeTime * DGain;
+
+    response = response + speedMod;
+
+    if(error >= -acceptableError && error <= acceptableError){
+      targetTimerStart = targetTimerStart + 1;
+    } else targetTimerStart = 0;
 
     m_driveTrain.drive(response, -response, true);
 
@@ -56,13 +88,16 @@ public class LimelightShooter extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-if (error >= acceptableError) {
-  return false;
-}
-if (error <= acceptableError * -1) {
-  return false;
-  }
-  return true;
+    if (error >= acceptableError) {
+      return false;
+    }
+    if (error <= acceptableError * -1) {
+      return false;
+    }
+    if(targetTimerStart == targetTimerTotal) {
+      return true;
+    }
+    return false;
   }
 
 }

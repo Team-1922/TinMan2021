@@ -102,7 +102,7 @@ public class RobotContainer {
         private final LimelightFlash m_limelightFlash = new LimelightFlash();
         private final LimelightShooter m_limelightShooter = new LimelightShooter(m_driveTrain);
         private final LimelightDistance m_limelightDistance = new LimelightDistance();
-        private final SequentialCommandGroup m_limelightAimAndDistance = new SequentialCommandGroup(m_limelightShooter, m_limelightDistance);
+        private final SequentialCommandGroup m_limelightAimAndDistance = new SequentialCommandGroup(m_limelightShooter);
 
         private final BetterIndexer m_bIndexer = new BetterIndexer(m_indexer, m_lTransfer, m_shooter);
         private final LifterCommand m_lifterUp = new LifterCommand(m_lifter, m_bIndexer, m_shooter);
@@ -165,6 +165,12 @@ SmartDashboard.putData("Auto", m_autoChooser);
                 
                 NetworkTableEntry LimePGain = table.getEntry("ShooterLimelightPGain");
                 LimePGain.setNumber(.05);
+
+                NetworkTableEntry LimeDGain = table.getEntry("ShooterLimelightDGain");
+                LimeDGain.setNumber(.18);
+
+                NetworkTableEntry LimeTime = table.getEntry("limelightTargetTime");
+                LimeTime.setNumber(2);
 
                 NetworkTableEntry LimeMinSpeed = table.getEntry("ShooterLimelightMinSpeed");
                 LimeMinSpeed.setNumber(.25);
