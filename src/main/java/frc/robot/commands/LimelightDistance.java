@@ -12,29 +12,57 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class LimelightDistance extends CommandBase {
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-shooter");
-  NetworkTableEntry thor = table.getEntry("thor");
+  NetworkTableEntry ty = table.getEntry("ty");
   private double distance;
-  private double targetWidth = thor.getDouble(0-320);
+  private double targetY;
+  private double lightAngle = 18;
+  private double lightHeight = 25;
+  private double targetHeight = 93.5;
+  private NetworkTableEntry distanceEntry;
+  private NetworkTableEntry velocityDistance;
+
+  private double shortRange = 1901;
+  private double medRange = 1902;
+  private double bigRange = 1903;
+  private double maxRange = 1904;
+  private double rangeValue;
+
   /** Creates a new LimelightDistance. */
   public LimelightDistance() {
+    NetworkTable coolTable = NetworkTableInstance.getDefault().getTable("OzRam");
+   distanceEntry = coolTable.getEntry("limeDistance");
 
-  
+   velocityDistance = coolTable.getEntry("limeVelocityDistance");
+
+   
+   
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    
+  targetY= ty.getDouble(0.0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // thor = -.52*distance(in)+156(in) honestly idk how to do simple graphing, works for now
-    // distance = (thor-156)/-.52 hypothetically
-distance = (targetWidth-156)/-.52;
-SmartDashboard.putNumber("limelightDistance", distance);
+//d = (h2-h1) / tan(a1+a2) a2=ty   h1, a1, h2 physical
+distance = (targetHeight - lightHeight) / Math.tan(Math.toRadians(lightAngle + targetY));
+distanceEntry.setNumber(distance);
+
+
+if(distance < 35) {
+  rangeValue = shortRange; 
+} else if(distance < 70) {
+  rangeValue = medRange;
+} else if(distance < 105) {
+  rangeValue = bigRange;
+} else {
+  rangeValue = maxRange;
+}
+  velocityDistance.setNumber(rangeValue);
 
   }
 
@@ -45,6 +73,6 @@ SmartDashboard.putNumber("limelightDistance", distance);
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }

@@ -78,6 +78,7 @@ public class RobotContainer {
         private final Indexer m_indexer = new Indexer();
         private final Lifter m_lifter = new Lifter();
         private final LifterUp m_lifterPutUp = new LifterUp(m_lifter, m_shooter);
+        private final LifterUp m_limeLifterPutUp = new LifterUp(m_lifter, m_shooter);
         private final CompressorSubsystem m_compressor = new CompressorSubsystem();
 
         private final Joystick m_joystickLeft = new Joystick(1);
@@ -98,11 +99,12 @@ public class RobotContainer {
         private final IndexerReverse m_indexerReverse = new IndexerReverse(m_indexer);
         private final BetterTransfer m_bTransfer = new BetterTransfer(m_indexer, m_lTransfer, 1);
         private final TransferCommand m_transferForward = new TransferCommand(m_lTransfer, -0.5);
+        private final TransferCommand m_limeTransferForward = new TransferCommand(m_lTransfer, -0.5);
         private final DriveForward m_driveForward = new DriveForward(m_driveTrain, "shootLeg");
         private final LimelightFlash m_limelightFlash = new LimelightFlash();
         private final LimelightShooter m_limelightShooter = new LimelightShooter(m_driveTrain);
         private final LimelightDistance m_limelightDistance = new LimelightDistance();
-        private final SequentialCommandGroup m_limelightAimAndDistance = new SequentialCommandGroup(m_limelightShooter);
+        private final SequentialCommandGroup m_limelightAimAndDistance = new SequentialCommandGroup(m_limelightShooter, m_limelightDistance);
 
         private final BetterIndexer m_bIndexer = new BetterIndexer(m_indexer, m_lTransfer, m_shooter);
         private final LifterCommand m_lifterUp = new LifterCommand(m_lifter, m_bIndexer, m_shooter);
@@ -114,7 +116,10 @@ public class RobotContainer {
         private final IndexerCommand m_indexerCommand = new IndexerCommand(m_indexer);
         private final Shoot m_shoot = new Shoot(m_indexerCommand, m_shooter );
         private final ShootVelocity m_shootVelocity = new ShootVelocity(m_shooter, "ShootingVelocity");
+        private final ShootVelocity m_shootLimeVelocity = new ShootVelocity(m_shooter, "limeVelocityDistance");
         private final ParallelDeadlineGroup m_shootAutoCommand = new ParallelDeadlineGroup(new WaitCommand(10), m_shootVelocity, m_transferForward, m_lifterPutUp);
+        private final ParallelDeadlineGroup m_shootAutoLimeCommand = new ParallelDeadlineGroup(new WaitCommand(10), m_shootLimeVelocity, m_limeTransferForward, m_limeLifterPutUp);
+        private final SequentialCommandGroup m_limeAimDistShoot = new SequentialCommandGroup(m_limelightAimAndDistance, m_shootAutoLimeCommand);
         private final SequentialCommandGroup m_shootLifterDown = new SequentialCommandGroup(m_lifterDown, m_shootAutoCommand, m_driveForward);
         // private final DefaultAuto m_autoCommand = new DefaultAuto(m_driveTrain);
 
@@ -433,7 +438,7 @@ SmartDashboard.putData("Auto", m_autoChooser);
 
                 new JoystickButton(m_XBoxController, 1) // A
                             //
-                             .toggleWhenPressed(m_limelightAimAndDistance);
+                             .toggleWhenPressed(m_limeAimDistShoot);
 
 
 

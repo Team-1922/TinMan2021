@@ -58,9 +58,10 @@ public class LimelightShooter extends CommandBase {
   public void execute() {
     error = tx.getDouble(0.0);
     response = PGain * error;
-    if(Math.abs(response) < minSpeed) {
+  /*  if(Math.abs(response) < minSpeed) {
       response = minSpeed * Math.signum(response);
     }
+    */
 
     totalTime = System.currentTimeMillis();
     changeTime = totalTime - startingTime;
@@ -71,11 +72,14 @@ public class LimelightShooter extends CommandBase {
     startingError = currentError;
     speedMod = changeError / changeTime * DGain;
 
-    response = response + speedMod;
+    response = response + speedMod + minSpeed * Math.signum(response);
 
     if(error >= -acceptableError && error <= acceptableError){
       targetTimerStart = targetTimerStart + 1;
-    } else targetTimerStart = 0;
+      response = response * .5;
+    } else {
+      targetTimerStart = 0;
+    }
 
     m_driveTrain.drive(response, -response, true);
 
@@ -88,12 +92,10 @@ public class LimelightShooter extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (error >= acceptableError) {
+    if (error <= -acceptableError && error >= acceptableError) {
       return false;
     }
-    if (error <= acceptableError * -1) {
-      return false;
-    }
+  
     if(targetTimerStart == targetTimerTotal) {
       return true;
     }
