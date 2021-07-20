@@ -21,18 +21,15 @@ public class LimelightDistance extends CommandBase {
   private NetworkTableEntry distanceEntry;
   private NetworkTableEntry velocityDistance;
 
-  private double shortRange = 1901;
-  private double medRange = 1902;
-  private double bigRange = 1903;
-  private double maxRange = 1904;
+  private double shortRange;
+  private double medRange;
+  private double bigRange;
+  private double maxRange;
   private double rangeValue;
 
   /** Creates a new LimelightDistance. */
   public LimelightDistance() {
-    NetworkTable coolTable = NetworkTableInstance.getDefault().getTable("OzRam");
-   distanceEntry = coolTable.getEntry("limeDistance");
 
-   velocityDistance = coolTable.getEntry("limeVelocityDistance");
 
    
    
@@ -42,7 +39,16 @@ public class LimelightDistance extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    NetworkTable coolTable = NetworkTableInstance.getDefault().getTable("OzRam");
+   distanceEntry = coolTable.getEntry("limeDistance");
+
+   velocityDistance = coolTable.getEntry("limeVelocityDistance");
   targetY= ty.getDouble(0.0);
+  
+  shortRange = coolTable.getEntry("velocityLimeShort").getDouble(1901);
+   medRange = coolTable.getEntry("velocityLimeMed").getDouble(1902);
+   bigRange = coolTable.getEntry("velocityLimeBig").getDouble(1903);
+   maxRange = coolTable.getEntry("velocityLimeMax").getDouble(1904);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

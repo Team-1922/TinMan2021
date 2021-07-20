@@ -182,6 +182,20 @@ SmartDashboard.putData("Auto", m_autoChooser);
 
                 NetworkTableEntry LimeOKError = table.getEntry("ShooterLimelightGoodError");
                 LimeOKError.setNumber(.5);
+
+
+                NetworkTableEntry velocityShort = table.getEntry("velocityLimeShort");
+                velocityShort.setNumber(1901);
+
+                NetworkTableEntry velocityMed = table.getEntry("velocityLimeMed");
+                velocityMed.setNumber(1902);
+
+                NetworkTableEntry velocityBig = table.getEntry("velocityLimeBig");
+                velocityBig.setNumber(1903);
+
+                NetworkTableEntry velocityMax = table.getEntry("velocityLimeMax");
+                velocityMax.setNumber(1700);
+          
                 
                 NetworkTableEntry stabilizer = table.getEntry("stabilizer");
                 stabilizer.setNumber(1);     
