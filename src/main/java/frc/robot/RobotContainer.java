@@ -169,19 +169,19 @@ SmartDashboard.putData("Auto", m_autoChooser);
                 shootLeg.setNumber(5);   
                 
                 NetworkTableEntry LimePGain = table.getEntry("ShooterLimelightPGain");
-                LimePGain.setNumber(.05);
+                LimePGain.setNumber(.03);
 
                 NetworkTableEntry LimeDGain = table.getEntry("ShooterLimelightDGain");
                 LimeDGain.setNumber(.18);
 
                 NetworkTableEntry LimeTime = table.getEntry("limelightTargetTime");
-                LimeTime.setNumber(2);
+                LimeTime.setNumber(3);
 
                 NetworkTableEntry LimeMinSpeed = table.getEntry("ShooterLimelightMinSpeed");
-                LimeMinSpeed.setNumber(.25);
+                LimeMinSpeed.setNumber(.17);
 
                 NetworkTableEntry LimeOKError = table.getEntry("ShooterLimelightGoodError");
-                LimeOKError.setNumber(.5);
+                LimeOKError.setNumber(.75);
 
 
                 NetworkTableEntry velocityShort = table.getEntry("velocityLimeShort");
@@ -191,10 +191,10 @@ SmartDashboard.putData("Auto", m_autoChooser);
                 velocityMed.setNumber(1902);
 
                 NetworkTableEntry velocityBig = table.getEntry("velocityLimeBig");
-                velocityBig.setNumber(1903);
+                velocityBig.setNumber(2250);
 
                 NetworkTableEntry velocityMax = table.getEntry("velocityLimeMax");
-                velocityMax.setNumber(1700);
+                velocityMax.setNumber(1750);
           
                 
                 NetworkTableEntry stabilizer = table.getEntry("stabilizer");
