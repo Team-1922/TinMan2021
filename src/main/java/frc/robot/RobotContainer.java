@@ -42,6 +42,7 @@ import frc.robot.commands.IndexerReverse;
 import frc.robot.commands.LifterCommand;
 import frc.robot.commands.LifterUp;
 import frc.robot.commands.Limelight;
+import frc.robot.commands.LimelightBallFind;
 import frc.robot.commands.LimelightDistance;
 import frc.robot.commands.LimelightFlash;
 import frc.robot.commands.LimelightShooter;
@@ -103,6 +104,7 @@ public class RobotContainer {
         private final DriveForward m_driveForward = new DriveForward(m_driveTrain, "shootLeg");
         private final LimelightFlash m_limelightFlash = new LimelightFlash();
         private final LimelightShooter m_limelightShooter = new LimelightShooter(m_driveTrain);
+        private final LimelightBallFind m_limelightBallFind = new LimelightBallFind(m_driveTrain);
         private final LimelightDistance m_limelightDistance = new LimelightDistance();
         private final SequentialCommandGroup m_limelightAimAndDistance = new SequentialCommandGroup(m_limelightShooter, m_limelightDistance);
 
@@ -184,17 +186,33 @@ SmartDashboard.putData("Auto", m_autoChooser);
                 LimeOKError.setNumber(.75);
 
 
+                NetworkTableEntry LimeBallPGain = table.getEntry("BallLimelightPGain");
+                LimeBallPGain.setNumber(.03);
+
+                NetworkTableEntry LimeBallDGain = table.getEntry("BallLimelightDGain");
+                LimeBallDGain.setNumber(.18);
+
+                NetworkTableEntry LimeBallTime = table.getEntry("BallLimelightTargetTime");
+                LimeBallTime.setNumber(3);
+
+                NetworkTableEntry LimeBallMinSpeed = table.getEntry("BallLimelightMinSpeed");
+                LimeBallMinSpeed.setNumber(.17);
+
+                NetworkTableEntry LimeBallOKError = table.getEntry("BallLimelightGoodError");
+                LimeBallOKError.setNumber(.75);
+
+
                 NetworkTableEntry velocityShort = table.getEntry("velocityLimeShort");
-                velocityShort.setNumber(1901);
+                velocityShort.setNumber(3200);
 
                 NetworkTableEntry velocityMed = table.getEntry("velocityLimeMed");
-                velocityMed.setNumber(1902);
+                velocityMed.setNumber(2300);
 
                 NetworkTableEntry velocityBig = table.getEntry("velocityLimeBig");
-                velocityBig.setNumber(2250);
+                velocityBig.setNumber(1750);
 
                 NetworkTableEntry velocityMax = table.getEntry("velocityLimeMax");
-                velocityMax.setNumber(1750);
+                velocityMax.setNumber(1600);
           
                 
                 NetworkTableEntry stabilizer = table.getEntry("stabilizer");
@@ -440,7 +458,8 @@ SmartDashboard.putData("Auto", m_autoChooser);
 
                 new JoystickButton(m_XBoxController, 4) // Y
                                 //
-                                .whenPressed(() -> m_CollectorDown.reverse()); 
+                                .whenPressed(//() -> m_CollectorDown.reverse()
+                                m_limelightBallFind); 
 
                 new JoystickButton(m_XBoxController, 7) // Left side menu button
                                 //

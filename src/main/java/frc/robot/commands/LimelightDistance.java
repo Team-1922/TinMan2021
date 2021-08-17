@@ -59,11 +59,11 @@ distance = (targetHeight - lightHeight) / Math.tan(Math.toRadians(lightAngle + t
 distanceEntry.setNumber(distance);
 
 
-if(distance < 35) {
+if(distance < 90) {
   rangeValue = shortRange; 
-} else if(distance < 70) {
-  rangeValue = medRange;
 } else if(distance < 105) {
+  rangeValue = medRange;
+} else if(distance < 140) {
   rangeValue = bigRange;
 } else {
   rangeValue = maxRange;
