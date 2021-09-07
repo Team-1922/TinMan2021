@@ -15,6 +15,7 @@ public class LimePickupBall extends CommandBase {
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
   NetworkTableEntry tx = table.getEntry("tx");
   NetworkTableEntry ty = table.getEntry("ty");
+  NetworkTableEntry thor = table.getEntry("thor");
   private double PGain;
   private double DGain;
   private double error;
@@ -26,6 +27,7 @@ public class LimePickupBall extends CommandBase {
   private double response;
   private double speedMod;
   private double speed;
+  private double teaWhy;
   /** Creates a new LimePickupBall. */
   public LimePickupBall(DriveTrain driveTrain) {
 m_driveTrain = driveTrain;
@@ -60,6 +62,8 @@ changeError = error - startingError;
 speedMod = changeError / changeTime * DGain;
 response = response + speedMod;
 
+teaWhy = thor.getDouble(0.0);
+
 m_driveTrain.drive(speed+response, speed-response, false);
   }
 
@@ -70,7 +74,8 @@ m_driveTrain.drive(speed+response, speed-response, false);
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (ty.getDouble(0.0) < -20) {
+    if (teaWhy > 90) {
+      m_driveTrain.drive(0, 0, false);
       return true;
     }
     return false;

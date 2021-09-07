@@ -111,7 +111,7 @@ public class RobotContainer {
         private final LimePickupBall m_limePickupBall = new LimePickupBall(m_driveTrain);
         private final CollectorDown m_limeCollectorDown = new CollectorDown(m_Collector, .5);
 
-        private final ParallelDeadlineGroup m_limeBallDriveTransfer = new ParallelDeadlineGroup(new WaitCommand(5), m_limeTransferForward2);
+        private final ParallelDeadlineGroup m_limeBallDriveTransfer = new ParallelDeadlineGroup(new WaitCommand(3), m_limeTransferForward2);
         private final SequentialCommandGroup m_limeDriveBall = new SequentialCommandGroup(m_limePickupBall, m_limeBallDriveTransfer);
         private final ParallelDeadlineGroup m_collectorBallGet = new ParallelDeadlineGroup(m_limeDriveBall, m_limeCollectorDown);
         private final SequentialCommandGroup m_limeBallAimGet = new SequentialCommandGroup(m_limelightBallFind, m_collectorBallGet);
@@ -198,7 +198,7 @@ SmartDashboard.putData("Auto", m_autoChooser);
                 LimeOKError.setNumber(.75);
 
                 NetworkTableEntry limeGetBallSpeed = table.getEntry("limeGetBallSpeed");
-                limeGetBallSpeed.setNumber(.5);
+                limeGetBallSpeed.setNumber(.2);
 
 
                 NetworkTableEntry LimeBallPGain = table.getEntry("BallLimelightPGain");
