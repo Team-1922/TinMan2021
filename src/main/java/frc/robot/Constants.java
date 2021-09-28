@@ -62,5 +62,5 @@ public final class Constants {
     public static final int compressor = 12;
     
 
-public static final  double encoderInchConversion = 4096/19.24;
+public static final  double encoderInchConversion = 2048/19.24;
 }

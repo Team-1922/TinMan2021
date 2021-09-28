@@ -41,6 +41,7 @@ import frc.robot.commands.IndexerCommand;
 import frc.robot.commands.IndexerReverse;
 import frc.robot.commands.LifterCommand;
 import frc.robot.commands.LifterUp;
+import frc.robot.commands.LimeDriveOnly;
 import frc.robot.commands.LimePickupBall;
 import frc.robot.commands.Limelight;
 import frc.robot.commands.LimelightBallFind;
@@ -110,12 +111,17 @@ public class RobotContainer {
         private final LimelightBallFind m_limelightBallFind = new LimelightBallFind(m_driveTrain);
         private final LimePickupBall m_limePickupBall = new LimePickupBall(m_driveTrain);
         private final CollectorDown m_limeCollectorDown = new CollectorDown(m_Collector, .5);
+        private final LimeDriveOnly m_limeDriveOnly = new LimeDriveOnly(m_driveTrain);
 
         private final ParallelDeadlineGroup m_limeBallDriveTransfer = new ParallelDeadlineGroup(new WaitCommand(3), m_limeTransferForward2);
-        private final SequentialCommandGroup m_limeDriveBall = new SequentialCommandGroup(m_limePickupBall, m_limeBallDriveTransfer);
+        private final SequentialCommandGroup m_limeDriveBall = new SequentialCommandGroup(m_limePickupBall, m_limeDriveOnly, m_limeBallDriveTransfer);
         private final ParallelDeadlineGroup m_collectorBallGet = new ParallelDeadlineGroup(m_limeDriveBall, m_limeCollectorDown);
         private final SequentialCommandGroup m_limeBallAimGet = new SequentialCommandGroup(m_limelightBallFind, m_collectorBallGet);
 
+        private final CollectorDown m_testCollectorDown = new CollectorDown(m_Collector, .5);
+        private final CollectorUp m_testCollectorUp = new CollectorUp(m_Collector);
+
+        // private final SequentialCommandGroup m_repeatTest = new SequentialCommandGroup(m_testCollectorDown, m_testCollectorUp, m_testCollectorDown, m_testCollectorUp);
 
         private final LimelightDistance m_limelightDistance = new LimelightDistance();
         private final SequentialCommandGroup m_limelightAimAndDistance = new SequentialCommandGroup(m_limelightShooter, m_limelightDistance);
@@ -154,7 +160,21 @@ public class RobotContainer {
                 initAutoChooser();
         }
 
-        
+        private SequentialCommandGroup limelightBallRecieve(){
+                TransferCommand limeTransferForward2 = new TransferCommand(m_lTransfer, -0.5);
+                LimePickupBall limePickupBall = new LimePickupBall(m_driveTrain);
+                CollectorDown limeCollectorDown = new CollectorDown(m_Collector, .5);
+                LimeDriveOnly limeDriveOnly = new LimeDriveOnly(m_driveTrain);
+                LimelightBallFind limelightBallFind = new LimelightBallFind(m_driveTrain);
+
+
+                ParallelDeadlineGroup limeBallDriveTransfer = new ParallelDeadlineGroup(new WaitCommand(3), limeTransferForward2);
+                SequentialCommandGroup limeDriveBall = new SequentialCommandGroup(limePickupBall, limeDriveOnly, limeBallDriveTransfer);
+                ParallelDeadlineGroup collectorBallGet = new ParallelDeadlineGroup(limeDriveBall, limeCollectorDown);
+                SequentialCommandGroup limeBallAimGet = new SequentialCommandGroup(limelightBallFind, collectorBallGet);
+
+                return limeBallAimGet;
+        }
 
         private void initAutoChooser()
         {
@@ -471,10 +491,11 @@ SmartDashboard.putData("Auto", m_autoChooser);
                                 //
                                 .whileHeld(new TransferCommand(m_lTransfer, -1.0));
 
+                             SequentialCommandGroup getBalls = new SequentialCommandGroup(limelightBallRecieve(), limelightBallRecieve(), limelightBallRecieve());
                 new JoystickButton(m_XBoxController, 4) // Y
                                 //
                                 .whenPressed(//() -> m_CollectorDown.reverse()
-                                m_limeBallAimGet); 
+                               getBalls); 
 
                 new JoystickButton(m_XBoxController, 7) // Left side menu button
                                 //

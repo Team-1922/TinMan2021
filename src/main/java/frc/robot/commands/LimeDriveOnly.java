@@ -7,30 +7,24 @@ package frc.robot.commands;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 
-public class LimePickupBall extends CommandBase {
+public class LimeDriveOnly extends CommandBase {
   private DriveTrain m_driveTrain;
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-  NetworkTableEntry tx = table.getEntry("tx");
-  NetworkTableEntry ty = table.getEntry("ty");
   NetworkTableEntry thor = table.getEntry("thor");
-  private double PGain;
-  private double DGain;
-  private double error;
-  private double startingError;
-  private double time;
-  private double startingTime;
-  private double changeError;
-  private double changeTime;
-  private double response;
-  private double speedMod;
   private double speed;
-  private double teaWhy;
-  /** Creates a new LimePickupBall. */
-  public LimePickupBall(DriveTrain driveTrain) {
-m_driveTrain = driveTrain;
+  private double m_pGain;
+  private double m_encoderStartValue;
+  private double m_rightEncoderStartValue;
+
+
+  
+  /** Creates a new LimeDriveOnly. */
+  public LimeDriveOnly(DriveTrain driveTrain) {
+    m_driveTrain = driveTrain;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_driveTrain);
   }
@@ -39,31 +33,30 @@ m_driveTrain = driveTrain;
   @Override
   public void initialize() {
     NetworkTable table = NetworkTableInstance.getDefault().getTable("OzRam");
-    PGain = table.getEntry("BallLimelightPGain").getDouble(.25);
-    DGain = table.getEntry("BallLimelightDGain").getDouble(.25);
     speed = table.getEntry("limeGetBallSpeed").getDouble(.75);
 
-    startingTime = System.currentTimeMillis();
-    startingError = tx.getDouble(0.0);
+    m_pGain = table.getEntry("PGain").getDouble(.0005);
+    m_encoderStartValue = m_driveTrain.getLeftEncoder();
+    m_rightEncoderStartValue = m_driveTrain.getRightEncoder();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    double newEncoderValue = m_driveTrain.getLeftEncoder();
+    double newRightEncoderValue = m_driveTrain.getRightEncoder();
+    double encoderError = (newRightEncoderValue - newEncoderValue) - (m_rightEncoderStartValue - m_encoderStartValue) ;
+  
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("OzRam");
+    NetworkTableEntry errorEntry = table.getEntry("encoderError");
+                  errorEntry.setNumber(encoderError);      
+ SmartDashboard.putString("Command", "LimeDriveOnly");
+  
+    double speedAdjustment = m_pGain * encoderError ; 
+    //m_driveTrain.drive((speed + speedAdjustment), speed - speedAdjustment, false);
+    m_driveTrain.drive(speed, speed, false);
+  
 
-error = tx.getDouble(0.0);
-time = System.currentTimeMillis();
-
-response = PGain * error;
-
-changeTime = time - startingTime;
-changeError = error - startingError;
-
-speedMod = changeError / changeTime * DGain;
-response = response + speedMod;
-
-
-m_driveTrain.drive(speed+response, speed-response, false);
   }
 
   // Called once the command ends or is interrupted.
@@ -75,10 +68,11 @@ m_driveTrain.drive(speed+response, speed-response, false);
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    teaWhy = thor.getDouble(0.0);
-    if (teaWhy > 35) {
+    double teaWhy = thor.getDouble(0.0);
+    if (teaWhy > 90) {
       return true;
     }
+
     return false;
   }
 }

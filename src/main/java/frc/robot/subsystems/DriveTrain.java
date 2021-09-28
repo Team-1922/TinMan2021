@@ -10,6 +10,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 
@@ -27,10 +29,10 @@ import frc.robot.Constants;
 public class DriveTrain extends SubsystemBase {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
-  private WPI_TalonSRX frontLeft = new WPI_TalonSRX(Constants.frontLeft);
-  private WPI_TalonSRX rearLeft = new WPI_TalonSRX(Constants.rearLeft);
-  private WPI_TalonSRX frontRight = new WPI_TalonSRX(Constants.frontRight);
-  private WPI_TalonSRX rearRight = new WPI_TalonSRX(Constants.rearRight);
+  private WPI_TalonFX frontLeft = new WPI_TalonFX(Constants.frontLeft);
+  private WPI_TalonFX rearLeft = new WPI_TalonFX(Constants.rearLeft);
+  private WPI_TalonFX frontRight = new WPI_TalonFX(Constants.frontRight);
+  private WPI_TalonFX rearRight = new WPI_TalonFX(Constants.rearRight);
   private AHRS ahrs = new AHRS(SPI.Port.kMXP);
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
   NetworkTableEntry tx = table.getEntry("tx");
@@ -47,11 +49,9 @@ public class DriveTrain extends SubsystemBase {
     rearRight.set(ControlMode.Follower, frontRight.getDeviceID());
     frontLeft.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
     frontRight.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-    frontRight.setSensorPhase(false);
-    frontRight.setInverted(true);
+    frontRight.setInverted(TalonFXInvertType.Clockwise);
     rearRight.setInverted(InvertType.FollowMaster);
-    frontLeft.setSensorPhase(false);
-    frontLeft.setInverted(false);
+    frontLeft.setInverted(TalonFXInvertType.CounterClockwise);
     rearLeft.setInverted(InvertType.FollowMaster);
   }
 
