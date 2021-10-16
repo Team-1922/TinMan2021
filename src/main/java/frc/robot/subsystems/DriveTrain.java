@@ -47,8 +47,8 @@ public class DriveTrain extends SubsystemBase {
     super();
     rearLeft.set(ControlMode.Follower, frontLeft.getDeviceID());
     rearRight.set(ControlMode.Follower, frontRight.getDeviceID());
-    frontLeft.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-    frontRight.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+    frontLeft.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+    frontRight.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
     frontRight.setInverted(TalonFXInvertType.Clockwise);
     rearRight.setInverted(InvertType.FollowMaster);
     frontLeft.setInverted(TalonFXInvertType.CounterClockwise);

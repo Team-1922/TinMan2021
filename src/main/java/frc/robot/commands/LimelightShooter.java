@@ -81,7 +81,7 @@ public class LimelightShooter extends CommandBase {
       targetTimerStart = 0;
     }
 
-    m_driveTrain.drive(response, -response, true);
+    m_driveTrain.drive(response*.5, -response*.5, true);
 
   }
 

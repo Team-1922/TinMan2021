@@ -54,6 +54,12 @@ public final class Constants {
     public static final int shooterRight = 11;
     public static final int shooterLeft = 10;
 
+    // Climber
+    public static final int topLeft = 13;
+    public static final int topRight = 14;
+    public static final int bottomLeft = 15;
+    public static final int bottomRight = 16;
+
     // pneumatics
     // public static final int collectorRight = 0;
     public static final int lifter = 1;

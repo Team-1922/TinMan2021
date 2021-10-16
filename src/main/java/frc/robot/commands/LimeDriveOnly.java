@@ -69,7 +69,7 @@ public class LimeDriveOnly extends CommandBase {
   @Override
   public boolean isFinished() {
     double teaWhy = thor.getDouble(0.0);
-    if (teaWhy > 90) {
+    if (teaWhy > 60) {
       return true;
     }
 

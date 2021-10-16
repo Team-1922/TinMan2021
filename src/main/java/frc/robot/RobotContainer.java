@@ -176,6 +176,32 @@ public class RobotContainer {
                 return limeBallAimGet;
         }
 
+        private SequentialCommandGroup limelightBallShoot() {
+                LimelightShooter limelightShooter = new LimelightShooter(m_driveTrain);
+                LimelightDistance limelightDistance = new LimelightDistance();
+                ShootVelocity limeShootVelocity = new ShootVelocity(m_shooter, "limeVelocityDistance");
+                TransferCommand limeTransfer = new TransferCommand(m_lTransfer, -0.5);
+                LifterUp limeLifterUp = new LifterUp(m_lifter, m_shooter);
+
+                SequentialCommandGroup limelightAimAndDistance = new SequentialCommandGroup(limelightShooter, limelightDistance);
+                ParallelDeadlineGroup shootAutoLimeCommand = new ParallelDeadlineGroup(new WaitCommand(10), limeShootVelocity, limeTransfer, limeLifterUp);
+
+                SequentialCommandGroup limeAimDistShoot = new SequentialCommandGroup(limelightAimAndDistance, shootAutoLimeCommand);
+
+                return limeAimDistShoot;
+
+        }
+
+        private SequentialCommandGroup autoRoutine() {
+                SequentialCommandGroup limelightBallShoot = new SequentialCommandGroup(limelightBallShoot());
+                SequentialCommandGroup limelightBallRecieve = new SequentialCommandGroup(limelightBallRecieve());
+                // implement mor commands here if needed
+
+                SequentialCommandGroup autoGroup = new SequentialCommandGroup(limelightBallShoot, limelightBallRecieve, limelightBallRecieve, limelightBallRecieve, limelightBallShoot);
+
+                return autoGroup;
+        }
+
         private void initAutoChooser()
         {
 
@@ -218,11 +244,11 @@ SmartDashboard.putData("Auto", m_autoChooser);
                 LimeOKError.setNumber(.75);
 
                 NetworkTableEntry limeGetBallSpeed = table.getEntry("limeGetBallSpeed");
-                limeGetBallSpeed.setNumber(.2);
+                limeGetBallSpeed.setNumber(.1);
 
 
                 NetworkTableEntry LimeBallPGain = table.getEntry("BallLimelightPGain");
-                LimeBallPGain.setNumber(.03);
+                LimeBallPGain.setNumber(.02);
 
                 NetworkTableEntry LimeBallDGain = table.getEntry("BallLimelightDGain");
                 LimeBallDGain.setNumber(.18);
@@ -251,7 +277,7 @@ SmartDashboard.putData("Auto", m_autoChooser);
           
                 
                 NetworkTableEntry stabilizer = table.getEntry("stabilizer");
-                stabilizer.setNumber(1);     
+                stabilizer.setNumber(.5);     
 
                 NetworkTableEntry shootingVelocity = table.getEntry("ShootingVelocity");
                 shootingVelocity.setNumber(2585);     
@@ -260,10 +286,10 @@ SmartDashboard.putData("Auto", m_autoChooser);
                 velocityContext.setString("Basically 2585 is our current default value and that's about 50% power, 5170 would be ~100%"); 
 
                 NetworkTableEntry entry = table.getEntry("drivespeed");
-                entry.setNumber(.27);      
+                entry.setNumber(.135);      
 
                 NetworkTableEntry turnEntry = table.getEntry("turnspeed");
-                turnEntry.setNumber (.46);
+                turnEntry.setNumber (.23);
                 
                 NetworkTableEntry firstLeg = table.getEntry("firstLeg");
                 firstLeg.setNumber(25);   
@@ -491,15 +517,13 @@ SmartDashboard.putData("Auto", m_autoChooser);
                                 //
                                 .whileHeld(new TransferCommand(m_lTransfer, -1.0));
 
-                             SequentialCommandGroup getBalls = new SequentialCommandGroup(limelightBallRecieve(), limelightBallRecieve(), limelightBallRecieve());
                 new JoystickButton(m_XBoxController, 4) // Y
                                 //
-                                .whenPressed(//() -> m_CollectorDown.reverse()
-                               getBalls); 
+                                .whenPressed(autoRoutine()); 
 
                 new JoystickButton(m_XBoxController, 7) // Left side menu button
                                 //
-                                .toggleWhenPressed(m_limelightFlash);
+                                .toggleWhenPressed(m_startingAutoCommand);
 
                 new JoystickButton(m_XBoxController, 8) // Right side menu button
                                 //

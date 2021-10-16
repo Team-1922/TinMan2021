@@ -81,7 +81,7 @@ public class LimelightBallFind extends CommandBase {
       targetTimerStart = 0;
     }
 
-    m_driveTrain.drive(response, -response, false);
+    m_driveTrain.drive(response*.5, -response*.5, false);
 
   }
 

@@ -76,7 +76,7 @@ m_driveTrain.drive(speed+response, speed-response, false);
   @Override
   public boolean isFinished() {
     teaWhy = thor.getDouble(0.0);
-    if (teaWhy > 35) {
+    if (teaWhy > 30) {
       return true;
     }
     return false;
