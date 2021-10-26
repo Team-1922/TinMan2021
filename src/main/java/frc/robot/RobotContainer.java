@@ -32,6 +32,7 @@ import frc.robot.autogroups.SlalomAuto;
 import frc.robot.autogroups.StartingAuto;
 import frc.robot.commands.BetterIndexer;
 import frc.robot.commands.BetterTransfer;
+import frc.robot.commands.ClimberMove;
 import frc.robot.commands.CollectorDown;
 import frc.robot.commands.CollectorReverse;
 import frc.robot.commands.CollectorUp;
@@ -55,6 +56,7 @@ import frc.robot.commands.TankDriveCommand;
 import frc.robot.commands.ToggleCompressor;
 import frc.robot.commands.ToggleHoodCommand;
 import frc.robot.commands.TransferCommand;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.CompressorSubsystem;
 import frc.robot.subsystems.DriveTrain;
@@ -83,6 +85,7 @@ public class RobotContainer {
         private final LifterUp m_lifterPutUp = new LifterUp(m_lifter, m_shooter);
         private final LifterUp m_limeLifterPutUp = new LifterUp(m_lifter, m_shooter);
         private final CompressorSubsystem m_compressor = new CompressorSubsystem();
+        private final ClimberSubsystem m_climberSubsystem = new ClimberSubsystem();
 
         private final Joystick m_joystickLeft = new Joystick(1);
         private final Joystick m_joystickRight = new Joystick(0);
@@ -112,6 +115,9 @@ public class RobotContainer {
         private final LimePickupBall m_limePickupBall = new LimePickupBall(m_driveTrain);
         private final CollectorDown m_limeCollectorDown = new CollectorDown(m_Collector, .5);
         private final LimeDriveOnly m_limeDriveOnly = new LimeDriveOnly(m_driveTrain);
+
+        private final ClimberMove m_climberUp = new ClimberMove(m_climberSubsystem, 0, 0);
+        private final ClimberMove m_climberDown = new ClimberMove(m_climberSubsystem, 0, 0);
 
         private final ParallelDeadlineGroup m_limeBallDriveTransfer = new ParallelDeadlineGroup(new WaitCommand(3), m_limeTransferForward2);
         private final SequentialCommandGroup m_limeDriveBall = new SequentialCommandGroup(m_limePickupBall, m_limeDriveOnly, m_limeBallDriveTransfer);
@@ -167,11 +173,13 @@ public class RobotContainer {
                 LimeDriveOnly limeDriveOnly = new LimeDriveOnly(m_driveTrain);
                 LimelightBallFind limelightBallFind = new LimelightBallFind(m_driveTrain);
 
+                CommandBase limeLifterDown = new InstantCommand(m_lifter::lifterDown, m_lifter);
 
+                ParallelDeadlineGroup limeDriveABit = new ParallelDeadlineGroup(new WaitCommand(3), limeDriveOnly);
                 ParallelDeadlineGroup limeBallDriveTransfer = new ParallelDeadlineGroup(new WaitCommand(3), limeTransferForward2);
-                SequentialCommandGroup limeDriveBall = new SequentialCommandGroup(limePickupBall, limeDriveOnly, limeBallDriveTransfer);
+                SequentialCommandGroup limeDriveBall = new SequentialCommandGroup(limePickupBall, limeDriveABit, limeBallDriveTransfer);
                 ParallelDeadlineGroup collectorBallGet = new ParallelDeadlineGroup(limeDriveBall, limeCollectorDown);
-                SequentialCommandGroup limeBallAimGet = new SequentialCommandGroup(limelightBallFind, collectorBallGet);
+                SequentialCommandGroup limeBallAimGet = new SequentialCommandGroup(limeLifterDown, limelightBallFind, collectorBallGet);
 
                 return limeBallAimGet;
         }
@@ -193,11 +201,11 @@ public class RobotContainer {
         }
 
         private SequentialCommandGroup autoRoutine() {
-                SequentialCommandGroup limelightBallShoot = new SequentialCommandGroup(limelightBallShoot());
-                SequentialCommandGroup limelightBallRecieve = new SequentialCommandGroup(limelightBallRecieve());
+                //SequentialCommandGroup limelightBallShoot = new SequentialCommandGroup(limelightBallShoot());
+                //SequentialCommandGroup limelightBallRecieve = new SequentialCommandGroup(limelightBallRecieve());
                 // implement mor commands here if needed
 
-                SequentialCommandGroup autoGroup = new SequentialCommandGroup(limelightBallShoot, limelightBallRecieve, limelightBallRecieve, limelightBallRecieve, limelightBallShoot);
+                SequentialCommandGroup autoGroup = new SequentialCommandGroup(limelightBallShoot(), limelightBallRecieve(), limelightBallRecieve(), limelightBallShoot());
 
                 return autoGroup;
         }
@@ -205,7 +213,8 @@ public class RobotContainer {
         private void initAutoChooser()
         {
 
-m_autoChooser.setDefaultOption("Slalom", m_slalomAutoCommand);
+m_autoChooser.setDefaultOption("AutoRoutine", autoRoutine()); 
+m_autoChooser.addOption("Slalom", m_slalomAutoCommand);
 m_autoChooser.addOption("Barrel", m_barrelAutoCommand);
 m_autoChooser.addOption("Bounce", m_bounceAutoCommand);
 m_autoChooser.addOption("Starting", m_startingAutoCommand );
@@ -229,32 +238,32 @@ SmartDashboard.putData("Auto", m_autoChooser);
                 shootLeg.setNumber(5);   
                 
                 NetworkTableEntry LimePGain = table.getEntry("ShooterLimelightPGain");
-                LimePGain.setNumber(.03);
+                LimePGain.setNumber(.015);
 
                 NetworkTableEntry LimeDGain = table.getEntry("ShooterLimelightDGain");
                 LimeDGain.setNumber(.18);
 
                 NetworkTableEntry LimeTime = table.getEntry("limelightTargetTime");
-                LimeTime.setNumber(3);
+                LimeTime.setNumber(4);
 
                 NetworkTableEntry LimeMinSpeed = table.getEntry("ShooterLimelightMinSpeed");
-                LimeMinSpeed.setNumber(.17);
+                LimeMinSpeed.setNumber(.1);
 
                 NetworkTableEntry LimeOKError = table.getEntry("ShooterLimelightGoodError");
-                LimeOKError.setNumber(.75);
+                LimeOKError.setNumber(.5);
 
                 NetworkTableEntry limeGetBallSpeed = table.getEntry("limeGetBallSpeed");
                 limeGetBallSpeed.setNumber(.1);
 
 
                 NetworkTableEntry LimeBallPGain = table.getEntry("BallLimelightPGain");
-                LimeBallPGain.setNumber(.02);
+                LimeBallPGain.setNumber(.01);
 
                 NetworkTableEntry LimeBallDGain = table.getEntry("BallLimelightDGain");
                 LimeBallDGain.setNumber(.18);
 
                 NetworkTableEntry LimeBallTime = table.getEntry("BallLimelightTargetTime");
-                LimeBallTime.setNumber(3);
+                LimeBallTime.setNumber(4);
 
                 NetworkTableEntry LimeBallMinSpeed = table.getEntry("BallLimelightMinSpeed");
                 LimeBallMinSpeed.setNumber(.17);
@@ -273,7 +282,7 @@ SmartDashboard.putData("Auto", m_autoChooser);
                 velocityBig.setNumber(1750);
 
                 NetworkTableEntry velocityMax = table.getEntry("velocityLimeMax");
-                velocityMax.setNumber(1600);
+                velocityMax.setNumber(1800);
           
                 
                 NetworkTableEntry stabilizer = table.getEntry("stabilizer");
@@ -475,7 +484,7 @@ SmartDashboard.putData("Auto", m_autoChooser);
 
 
                 NetworkTableEntry startLeg1 = table.getEntry("startLeg1");
-                startLeg1.setNumber (1);
+                startLeg1.setNumber (18);
 
                 NetworkTableEntry startLeg2 = table.getEntry("startLeg2");
                 startLeg2.setNumber (-1);
@@ -531,8 +540,16 @@ SmartDashboard.putData("Auto", m_autoChooser);
 
                 new JoystickButton(m_XBoxController, 1) // A
                             //
-                             .toggleWhenPressed(m_limeAimDistShoot);
+                             .whenPressed(new SequentialCommandGroup(limelightBallRecieve(), limelightBallRecieve()));
 
+
+                new JoystickButton(m_XBoxController, 10) // Stick Clicky Left
+                            //
+                            .whenHeld(m_climberUp);      
+
+                new JoystickButton(m_XBoxController, 11) // Stick Clicky Right
+                            //
+                            .whenHeld(m_climberDown);    
 
 
         }

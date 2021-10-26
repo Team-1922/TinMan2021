@@ -53,7 +53,7 @@ public class LimeDriveOnly extends CommandBase {
  SmartDashboard.putString("Command", "LimeDriveOnly");
   
     double speedAdjustment = m_pGain * encoderError ; 
-    //m_driveTrain.drive((speed + speedAdjustment), speed - speedAdjustment, false);
+    m_driveTrain.drive((speed + speedAdjustment), speed - speedAdjustment, false);
     m_driveTrain.drive(speed, speed, false);
   
 
@@ -66,13 +66,22 @@ public class LimeDriveOnly extends CommandBase {
   }
 
   // Returns true when the command should end.
+
+  /*
+
+
   @Override
   public boolean isFinished() {
     double teaWhy = thor.getDouble(0.0);
+    
+    
     if (teaWhy > 60) {
       return true;
     }
 
     return false;
   }
+}
+
+*/
 }

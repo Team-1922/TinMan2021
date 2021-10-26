@@ -76,7 +76,7 @@ m_driveTrain.drive(speed+response, speed-response, false);
   @Override
   public boolean isFinished() {
     teaWhy = thor.getDouble(0.0);
-    if (teaWhy > 30) {
+    if (teaWhy > 26) { //it was 30 before, but it's acting dumb
       return true;
     }
     return false;

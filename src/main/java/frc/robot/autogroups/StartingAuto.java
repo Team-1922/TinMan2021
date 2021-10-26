@@ -18,7 +18,7 @@ public class StartingAuto extends SequentialCommandGroup {
 
   addCommands(
     
-  new Turn(driveTrain, "startLeg1"));
+  new DriveForward(driveTrain, "startLeg1"));
 
   }
 
